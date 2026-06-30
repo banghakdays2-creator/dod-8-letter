@@ -29,6 +29,60 @@
   input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:#fffaf0; border:2px solid #b8863a; box-shadow:0 1px 3px rgba(74,40,20,.4); margin-top:-4px; }
   input[type=range]::-webkit-slider-runnable-track { height:7px; border-radius:99px; }
 
+  #loading-cover {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background:
+      radial-gradient(circle at 50% 35%, rgba(255, 250, 236, .96), rgba(237, 217, 178, .94) 58%, rgba(218, 190, 138, .96));
+    color: #6a4525;
+    transition: opacity .45s ease, visibility .45s ease;
+  }
+
+  #loading-cover.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .loading-card {
+    width: min(360px, 86vw);
+    padding: 28px 24px 24px;
+    border: 1px solid rgba(160, 112, 54, .35);
+    border-radius: 28px;
+    background: rgba(255, 252, 244, .76);
+    box-shadow: 0 18px 48px rgba(112, 76, 33, .18), inset 0 1px rgba(255,255,255,.72);
+    text-align: center;
+  }
+
+  .loading-mark {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, #fff8df 0 23%, transparent 24%),
+      conic-gradient(from 0deg, rgba(184, 134, 58, .18), rgba(184, 134, 58, .86), rgba(184, 134, 58, .18));
+    animation: spin 1.45s linear infinite;
+  }
+
+  .loading-title {
+    margin: 0;
+    font-family: 'Gowun Batang', 'Batang', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #6a4525;
+  }
+
+  .loading-text {
+    margin: 9px 0 0;
+    font-size: 14px;
+    color: rgba(106, 69, 37, .72);
+  }
+
   body::before {
     content: "";
     position: fixed;
@@ -298,6 +352,14 @@
 </helmet>
 
 <div style="position:relative; min-height:100vh; overflow-x:hidden; font-family:'Gowun Dodum',sans-serif; color:#4a3620; background:radial-gradient(circle at 14% 2%, #fbf0d4, transparent 38%), radial-gradient(circle at 88% 8%, #f1e2c4, transparent 42%), radial-gradient(circle at 50% 118%, rgba(120,85,45,.18), transparent 55%), linear-gradient(165deg, #f4e8cd 0%, #ecdcbc 48%, #e6d3b1 100%);">
+
+  <div id="loading-cover" aria-live="polite" aria-label="로딩 중">
+    <div class="loading-card">
+      <div class="loading-mark" aria-hidden="true"></div>
+      <p class="loading-title">선물 보관함 여는 중</p>
+      <p class="loading-text">편지와 그림을 정리하고 있어요</p>
+    </div>
+  </div>
 
   <div aria-hidden="true" style="position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;">
     <sc-for list="{{ particles }}" as="p" hint-placeholder-count="20">
@@ -766,6 +828,42 @@ class Component extends DCLogic {
     };
   }
 }
+</script>
+<script>
+  (() => {
+    const startedAt = Date.now();
+    const criticalImages = [
+      'assets/letters/NPC.png',
+      'assets/letters/thumb-asteria.png',
+      'assets/letters/thumb-leon.png',
+      'assets/letters/thumb-kairon.png',
+      'assets/letters/thumb-shanya.png',
+      'assets/letters/envelope.png',
+      'assets/letters/envelope-lid.png'
+    ];
+
+    const waitForImage = (src) => new Promise((resolve) => {
+      const image = new Image();
+      image.onload = resolve;
+      image.onerror = resolve;
+      image.src = src;
+    });
+
+    const hide = () => {
+      const elapsed = Date.now() - startedAt;
+      const delay = Math.max(0, 850 - elapsed);
+      window.setTimeout(() => {
+        const cover = document.getElementById('loading-cover');
+        if (cover) cover.classList.add('is-hidden');
+      }, delay);
+    };
+
+    Promise.all(criticalImages.map(waitForImage)).then(hide);
+    window.addEventListener('load', hide);
+    window.setTimeout(hide, 1400);
+    window.setTimeout(hide, 2600);
+    window.setTimeout(hide, 4200);
+  })();
 </script>
 </body>
 </html>
