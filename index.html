@@ -671,6 +671,34 @@ class Component extends DCLogic {
     return { style: base + anim };
   });
 
+  imageCache = {};
+  preloadAsset = (path) => {
+    const src = this.res(path);
+    if (this.imageCache[src]) return this.imageCache[src];
+    this.imageCache[src] = new Promise((resolve) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        if (img.decode) img.decode().catch(() => {}).finally(resolve);
+        else resolve();
+      };
+      img.onerror = resolve;
+      img.src = src;
+      if (img.complete) resolve();
+    });
+    return this.imageCache[src];
+  };
+  warmSceneImages = () => {
+    const paths = [
+      ...this.LETTERS.map((item) => item.path),
+      ...this.ILLUST.map((item) => item.path),
+      'assets/letters/envelope.png',
+      'assets/letters/envelope-lid.png',
+      'assets/letters/seal.png',
+    ];
+    paths.forEach((path) => this.preloadAsset(path));
+  };
+
   setAudioRef = (el) => {
     if (el && this.audioEl !== el) {
       this.audioEl = el;
@@ -709,6 +737,9 @@ class Component extends DCLogic {
       }
     };
     window.addEventListener('keydown', this._onKey);
+    const warm = () => this.warmSceneImages();
+    if (window.requestIdleCallback) window.requestIdleCallback(warm, { timeout: 2600 });
+    else window.setTimeout(warm, 700);
   }
   componentWillUnmount() {
     window.removeEventListener('keydown', this._onKey);
@@ -722,7 +753,9 @@ class Component extends DCLogic {
 
   setTab = (tab) => { this.setState({ tab }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
-  openLetter = (item) => this.setState({ sceneLetter: item, phase: 'sealed' });
+  openLetter = (item) => {
+    this.preloadAsset(item.path).finally(() => this.setState({ sceneLetter: item, phase: 'sealed' }));
+  };
   playSfx = () => { if (this.sfxEl) { try { this.sfxEl.volume = 0.62; this.sfxEl.currentTime = 0; this.sfxEl.play(); } catch (e) {} } };
   openSeal = () => {
     if (this.state.phase !== 'sealed') return;
@@ -737,8 +770,17 @@ class Component extends DCLogic {
   };
   saveLetter = () => { if (this.state.sceneLetter) this.download(this.state.sceneLetter.path); };
 
-  openIllust = (i) => this.setState({ illustOpen: true, illustIndex: i });
-  moveIllust = (step) => this.setState((s) => ({ illustIndex: (s.illustIndex + step + this.ILLUST.length) % this.ILLUST.length }));
+  openIllust = (i) => {
+    this.preloadAsset(this.ILLUST[i].path).finally(() => this.setState({ illustOpen: true, illustIndex: i }));
+  };
+  moveIllust = (step) => {
+    const idx = (this.state.illustIndex + step + this.ILLUST.length) % this.ILLUST.length;
+    const token = (this._illustToken || 0) + 1;
+    this._illustToken = token;
+    this.preloadAsset(this.ILLUST[idx].path).finally(() => {
+      if (this._illustToken === token) this.setState({ illustIndex: idx });
+    });
+  };
   closeIllust = () => this.setState({ illustOpen: false });
   saveIllust = () => this.download(this.ILLUST[this.state.illustIndex].path);
 
