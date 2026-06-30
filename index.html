@@ -312,7 +312,7 @@
 
     section[data-screen-label='대사창'] {
       align-items: flex-end !important;
-      gap: 0 !important;
+      gap: 12px !important;
       margin-top: 12px !important;
     }
 
@@ -325,9 +325,9 @@
     }
 
     section[data-screen-label='대사창'] > div:last-child {
-      flex: 0 1 64% !important;
-      max-width: 64% !important;
-      margin-left: 6px !important;
+      flex: 0 1 60% !important;
+      max-width: 60% !important;
+      margin-left: 0 !important;
       padding: 23px 13px 13px !important;
       border-radius: 5px 38px 38px 38px !important;
       border-width: 1px !important;
@@ -915,7 +915,7 @@ class Component extends DCLogic {
 
     const hide = () => {
       const elapsed = Date.now() - startedAt;
-      const delay = Math.max(0, 850 - elapsed);
+      const delay = Math.max(0, 1300 - elapsed);
       window.setTimeout(() => {
         const cover = document.getElementById('loading-cover');
         if (cover) cover.classList.add('is-hidden');
@@ -924,9 +924,9 @@ class Component extends DCLogic {
 
     Promise.all(criticalImages.map(waitForImage)).then(hide);
     window.addEventListener('load', hide);
-    window.setTimeout(hide, 1400);
-    window.setTimeout(hide, 2600);
-    window.setTimeout(hide, 4200);
+    window.setTimeout(hide, 1900);
+    window.setTimeout(hide, 3200);
+    window.setTimeout(hide, 5200);
   })();
 </script>
 </body>
