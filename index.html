@@ -532,7 +532,7 @@
         </aside>
         <div style="flex:1 1 360px; min-width:300px;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
-            <div style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:99px; background:linear-gradient(180deg,#c79a4e,#a87a30); color:#fff7e2; font-family:'Gowun Batang',serif; font-weight:700; font-size:14px; box-shadow:0 5px 12px rgba(74,40,20,.22);">수록곡 21곡</div>
+            <div style="display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:99px; background:linear-gradient(180deg,#c79a4e,#a87a30); color:#fff7e2; font-family:'Gowun Batang',serif; font-weight:700; font-size:14px; box-shadow:0 5px 12px rgba(74,40,20,.22);">수록곡 28곡</div>
           </div>
           <div style="display:grid; gap:9px;">
             <sc-for list="{{ tracks }}" as="t" hint-placeholder-count="10">
@@ -643,6 +643,9 @@ class Component extends DCLogic {
     'assets/audio/우당탕탕 일상.ogg', 'assets/audio/자비에.ogg', 'assets/audio/카이론의 겨울.ogg',
     'assets/audio/카타리나.ogg', 'assets/audio/킨의 겨울.ogg', 'assets/audio/티아나.ogg',
     'assets/audio/티아나의 겨울.ogg', 'assets/audio/패배의 장미.ogg', 'assets/audio/필립.ogg',
+    'assets/audio/결심의 밤.ogg', 'assets/audio/마녀의 이야기.ogg', 'assets/audio/슬픈 겨울.ogg',
+    'assets/audio/시크릿 던전.ogg', 'assets/audio/첫 만남 그 겨울.ogg', 'assets/audio/축복의 빛.ogg',
+    'assets/audio/평온한 일상.ogg',
   ];
 
   particles = Array.from({ length: 86 }, (_, i) => {
@@ -959,9 +962,7 @@ class Component extends DCLogic {
 
     Promise.all(criticalImages.map(waitForImage)).then(hide);
     window.addEventListener('load', hide);
-    window.setTimeout(hide, 2600);
-    window.setTimeout(hide, 4200);
-    window.setTimeout(hide, 6400);
+    window.setTimeout(hide, 3000);
   })();
 </script>
 </body>
